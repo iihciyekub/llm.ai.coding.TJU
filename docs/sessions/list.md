@@ -34,9 +34,3 @@
 >
 > ## ollama 安装 & LLM 本地部署
 >
-
-```video
-https://github.com/user-attachments/assets/0b6a264e-0ade-4f4e-bbf5-bbadb150c137
-```
-
-[![video](https://github.com/user-attachments/assets/0b6a264e-0ade-4f4e-bbf5-bbadb150c137)](https://github.com/user-attachments/assets/0b6a264e-0ade-4f4e-bbf5-bbadb150c137)

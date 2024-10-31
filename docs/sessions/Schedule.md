@@ -1,9 +1,9 @@
----
-datetime: 2024-10-30 21:03
----
 ### <font color="#205867">LLM AI-coding  - TJU CoME 2024 Workshop</font>
 
+@TJU CoME
 
+`ris:Github`  github-doc: https://iihciyekub.github.io/llm.ai.coding.TJU/#/sessions/list
+`rir:MailCheck` Yongjian.Li@polyu.edu.hk
 
 <div class="page-break" style="page-break-before: always;"></div>
 
@@ -80,7 +80,6 @@ content:
 
 `rir:RestTime` session 2 结束
 ```
- 
 <div class="page-break" style="page-break-before: always;"></div>
 
 
@@ -116,7 +115,6 @@ content:
 
 `rir:RestTime` session 3 结束
 ```
-
 <div class="page-break" style="page-break-before: always;"></div>
 
 

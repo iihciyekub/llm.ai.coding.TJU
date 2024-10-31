@@ -5,7 +5,7 @@
 # **对话 AI 编程实践与 LLM 应用** 
 ## Chat-Based AI Coding with LLM
 
-###  2024.10.26 - 27
+###  2024.11.02  -  11.03
 
 ### TJU CoME workshop
 
