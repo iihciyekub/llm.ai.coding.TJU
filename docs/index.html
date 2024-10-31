@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Description">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+
+  <!-- 配置 Mermaid 渲染器 -->
+  <script src="//cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+  <!-- 支持 LaTex 语言 -->
+  <link rel="stylesheet" href="https://notebook.js.org/plugin/css/katex.min.css" />
+
+  <!-- 文件夹样式 -->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar-folder.min.css" />
+
+  <!--各种小图标 ico  https://fontawesome.com/icons?d=gallery&m=free -->
+  <script defer src="https://use.fontawesome.com/releases/v6.4.0/js/all.js"></script>
+  <script defer src="https://use.fontawesome.com/releases/v6.4.0/js/v4-shims.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css">
+
+</head>
+
+<body>
+  <nav>
+    <a href="#/" id="projectname"></a>
+    <a href="#/README.md"><i class="fa-solid fa-house"></i> 介绍</a>
+    <a id='github_url'><i class="fa-brands fa-github"></i> GitHub</a>
+    <!-- <a id='icon_url'><i class="fa-solid fa-link"></i> fontawesome</a> -->
+    <!-- <a href="#/week/week1">/week/目录</a> -->
+    <!-- <a href="#/week/week1">/week/目录</a> -->
+    <!-- 注意这里的路径需要以#开头 -->
+  </nav>
+  <div id="app"></div>
+  <script>
+    // var short_name = 'code copilot';
+    var long_name = 'TJU workshop: Chat-Base AI coding whit LLM';
+    var github_url = 'https://github.com/iihciyekub/llm.ai.coding.TJU';
+
+
+    let pn = document.getElementById('projectname')
+    pn.innerHTML = `<i class="fa-solid fa-folder-open"></i> ${long_name}`
+
+
+    document.getElementById('github_url').href = github_url
+    document.title = long_name;
+
+    // var icon_url = 'https://fontawesome.com/icons?d=gallery&m=free';
+    // document.getElementById('icon_url').href = icon_url
+
+    function tocode(code) {
+      code = code.trim();
+      if (code.indexOf("github.com/") != -1) {
+        code = "https://mozilla.github.io/pdf.js/web/viewer.html?file=" + code;
+        code = code.replace("github.com/", "raw.githubusercontent.com/").replace("/blob", "");
+      } else {
+        code = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${github_url.replace("github.com/", "raw.githubusercontent.com/")}/main/${code}`
+      }
+      return code
+    }
+  </script>
+  <script>
+    //core
+    window.$docsify = {
+      // name: `<i class="fa-solid fa-code"></i> ${short_name}`,
+      // repo: 'https://github.com/iihciyekub/codecopilot.polyU',
+      markdown: {
+        smartypants: true,
+        renderer: {
+          link: function () {
+            // ...
+          },
+        },
+      },
+      // function
+      markdown: function (marked, renderer) {
+        // ...
+        return marked;
+      },
+      inlineMath: [['$', '$']],
+      displayMath: [['$$', '$$']],
+      markdown: {
+        renderer: {
+          code: function (code, lang) {
+            if (lang === '') {
+              return render_dim(code)
+            } else if (lang === 'drawio') {
+              return render_drawio(code)
+            } else if (lang === 'mermaid') {
+              return render_mermaid(code)
+            } else if (lang === 'pdf') {
+              code = tocode(code);
+              if (pdf_renderer(code, lang, true)) {
+                return pdf_renderer(code, lang, false);
+              }
+            } else if (lang === 'video') {
+              return `<video src="${code}" controls="controls" width="100%"></video>`
+            } else {
+              return this.origin.code.apply(this, arguments);
+            }
+          }
+        }
+
+      },
+      // <!-- 搜索框 -->
+      search: {
+        placeholder: {
+          '/': '全局搜索...'
+        },
+        depth: 3
+      },
+      auto2top: true,
+      topMargin: 90,
+      coverpage: true,
+      loadNavbar: true,
+      loadSidebar: true,
+      subMaxLevel: 3,
+      // <!-- 回到顶部 -->
+      scrollToTop: {
+        auto: true,
+        text: 'Top',
+        right: 15,
+        bottom: 15,
+        offset: 500
+      },
+      // 分页导航插件
+      pagination: {
+        previousText: '上一卷',
+        nextText: '下一卷',
+        crossChapter: true,
+        crossChapterText: true
+      },
+      //统计字数
+      count: {
+        countable: true,
+        fontsize: '0.9em',
+        color: 'rgb(90,90,90)',
+        language: 'chinese'
+      },
+    }
+  </script>
+
+  <script>
+    // 渲染 mermaid 代码块
+    var num = 0;
+    mermaid.initialize({ startOnLoad: false });
+    function render_mermaid(code) {
+      return (
+        '<div class="mermaid">' + mermaid.render('mermaid-svg-' + num++, code) + "</div>"
+      );
+    }
+
+    // 计数器
+    var codenum = 0;
+    // 渲染不指语言的代码块
+    function render_dim(code) {
+
+      // 先判断变量 codenum 是否变量类型为字符串
+      if (typeof codenum == 'string') {
+        //再判断变量codenum 所有字符是否数字字符
+        if (codenum.match(/^\d+$/)) {
+          // 将codenum 转换成数字
+          codenum = parseInt(codenum)
+        } else {
+          // 如果codenum 不是数字字符，那么将codenum 赋值为0
+          codenum = 0;
+        }
+      }
+
+      codenum += 1;
+      //将code 的所有\n 替换成<br>
+      var comment = '';
+      var text = '';
+      //使用用正则表达式匹配变量code #init 后面跟着0到3个数字
+      var reg = /#init\{(.*?)\}/;
+      if (reg.test(code)) {
+        // 将匹配到的结果取出来
+        codenum = code.match(reg)[1];
+
+        // 将匹配到的结果替换成空
+        code = code.replace(reg, '')
+      }
+
+      split_t = '#end'
+      code = code.trim("\n")
+      // 判断 #--# 是否在code 字符中
+      if (code.indexOf(split_t) != -1) {
+        // 说明有注释
+        comment = code.split(split_t)[0];
+        comment = comment.replace(/\n/g, '<br>')
+
+        text = code.split(split_t)[1];
+        text = text.trim("\n")
+        text = text.replace(/\n/g, '<br>')
+      } else {
+        text = code.replace(/\n/g, '<br>')
+      }
+      var display = 'none'
+      var ishow = '0pt'
+      if (comment != "") {
+        display = 'block'
+        ishow = '0pt'
+      }
+
+
+      var commentcode = `
+<div style="display: flex;">
+  <div style=" width: 5%; height: auto;  border: 0pt solid #fffff; border-radius: 10px; background-color: #FFFFFF; font-weight: none; display: flex; align-items: center; justify-content: center;">
+    <div  style="width: 0.4mm;
+      height: 1em ;
+      background-color: #a3a3a3;
+      border-radius: 2px;
+      border-top-right-radius: 0px;
+      border-top-left-radius: 0px; "></div>
+  </div>
+  <div style="font-size: 12px; width: 95%; height: auto; padding: 5pt;"></div>
+</div>
+
+<div style="display: flex;">
+    <div style=" width: 5%; height: auto;  font-weight: none; display: flex; align-items: center; justify-content: center;">
+        <i class="fa-solid fa-code-commit fa-lg" style="color: #737578;"></i>
+    </div>
+    <div
+        style="font-size: 12px; 
+        width: 15%; 
+        min-width: atuo;
+        height: auto; 
+        padding: 5pt; 
+        border-top-left-radius: 6px;
+        background-color: #F6F8FA;
+        border-left: 1pt solid  #c3c3c3;
+        border-right: 1pt solid  #c3c3c3;
+        border-top: 1pt solid  #c3c3c3;
+        text-align: center;
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        "
+        onclick='copyText()'>
+        <button id = 'copycode'  class="fa-regular fa-clone fa-lg" style="color: #737578; " onclick='copyText()'></button><a>&nbsp
+           copy it</a>
+    </div>
+    <div
+        style="font-size: 12px; 
+        width: 5%; 
+        height: auto; 
+        padding: 5pt; 
+        background-color: #F6F8FA;
+        border: 1pt solid  #c3c3c3;
+        border-left: 0pt;
+        border-right: 0pt;
+        text-align: center;
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        ">
+        <i class="fa-solid fa-user-pen fa-lg" style="color: #737578;"></i> 
+    </div>
+    <div
+        style="font-size: 12px; 
+        width: 75%; 
+        height: auto; 
+        padding: 5pt; 
+        border-top-right-radius: 6px ;
+        background-color: #F6F8FA;
+        border: 1pt solid #c3c3c3; 
+        border-left: 0pt solid  #c9c9c9;
+        display: flex; 
+        align-items: top; 
+        justify-content: left;
+        ">
+        <a>step.${codenum}</a>&nbsp ${comment} 
+    </div>
+</div>
+`
+
+      var textcode = `
+<div style="display: flex;">
+  <div style=" width: 5%; border: 0pt solid #fffff; border-radius: 10px; background-color: #FFFFFF; font-weight: none; display: flex; align-items: top; justify-content: center;">
+        <div
+          style="width:  0.4mm;
+          height: auto ;
+          background-color: #a3a3a3;
+          border-radius: 0.9px;
+          border-bottom-left-radius: 0px;
+          border-bottom-right-radius: 0px;
+          ">
+        </div>
+    </div>
+    <div id='iprompt';
+        style="font-size: 12px;
+        line-height: 15pt;
+        width: 95%; 
+        height: auto; 
+        padding: 10pt; 
+        border-left: 1pt solid  #c3c3c3;
+        border-right: 1pt solid #c3c3c3;
+        border-bottom: 1pt solid #c3c3c3;
+        border-bottom-left-radius: 3px;
+        border-bottom-right-radius: 3px;
+        background-color: #FeFeFe;
+        ">
+        ${text}
+    </div>
+</div>
+
+
+              `
+      output = `
+<div id = 'copyprompt'>
+${commentcode}
+${textcode}
+</div>
+`
+      return output
+    };
+
+    // 渲染 drawio 代码块
+    function render_drawio(code) {
+      if (window.drawioConverter) {
+        return window.drawioConverter(code)
+      } else {
+        return `<div class='drawio-code'>${code}</div>`
+      }
+    }
+
+    // 渲染 pdf 代码块
+    function pdf_renderer(code, lang, verify) {
+      function unique_id_generator() {
+        function rand_gen() {
+          return Math.floor((Math.random() + 1) * 65536).toString(16).substring(1);
+        }
+        return rand_gen() + rand_gen() + '-' + rand_gen() + '-' + rand_gen() + '-' + rand_gen() + '-' + rand_gen() + rand_gen() + rand_gen();
+      }
+      if (lang && !lang.localeCompare('pdf', 'en', { sensitivity: 'base' })) {
+        if (verify) {
+          return true;
+        } else {
+          var divId = "markdown_code_pdf_container_" + unique_id_generator().toString();
+          var container_list = new Array();
+          if (localStorage.getItem('pdf_container_list')) {
+            container_list = JSON.parse(localStorage.getItem('pdf_container_list'));
+          }
+          container_list.push({ "pdf_location": code, "div_id": divId });
+          localStorage.setItem('pdf_container_list', JSON.stringify(container_list));
+          return (
+            '<br>'
+            + '<div id="pdf.js">'
+            + '<button id="showpdf" class="fa-solid fa-file-pdf fa-2xl" style="color: #737578;" onclick="showpdf()" ></button>'
+            + '<a id="showtxt" onclick="showpdf()">  点击预览pdf</a>'
+            + '<div style="margin-top:' + PDF_MARGIN_TOP + '; margin-bottom:' + PDF_MARGIN_BOTTOM + ';display:none;" id="' + divId + '">'
+            + '<a href="' + code + '"> Link </a> to ' + code
+            + '</div>'
+            + '</div><br>'
+          );
+        }
+      }
+      return false;
+    }
+  </script>
+
+  <script>
+
+    function showpdf() {
+      var currentElement = document.elementFromPoint(event.clientX, event.clientY);
+      while (currentElement.id != 'pdf.js') {
+        currentElement = currentElement.parentNode;
+      }
+      // 获取 div.pdfobject-container 的display 属性值
+      var display = window.getComputedStyle(document.querySelector('div.pdfobject-container')).display;
+      if (display == 'block') {
+        document.querySelector('div.pdfobject-container').style.display = 'none';
+        document.querySelector('a#showtxt').innerText = '\t点击预览pdf';
+      } else {
+        document.querySelector('div.pdfobject-container').style.display = 'block';
+        document.querySelector('a#showtxt').innerText = '\t点击隐藏pdf';
+
+      }
+
+    }
+
+
+    // 点击复制代码
+    function copyText() {
+      var currentElement = document.elementFromPoint(event.clientX, event.clientY);
+      while (currentElement.id != 'copyprompt') {
+        currentElement = currentElement.parentNode;
+      }
+      var text = currentElement.querySelector('div#iprompt').innerText;
+      navigator.clipboard.writeText(text).then(function () {
+        // console.log('Async: Copying to clipboard was successful!');
+      }, function (err) {
+        // console.error('Async: Could not copy text: ', err);
+      });
+      // 创建提示框元素，显示 1 秒后移除
+      const tooltip = document.createElement('div');
+      tooltip.innerText = '复制完成';
+      tooltip.style.position = 'fixed';
+      tooltip.style.top = '50%';
+      tooltip.style.left = '50%';
+      tooltip.style.transform = 'translate(-50%, -50%)';
+      tooltip.style.background = 'rgba(0, 0, 0, 0.8)';
+      tooltip.style.color = '#fff';
+      tooltip.style.padding = '10px';
+      tooltip.style.borderRadius = '5px';
+      tooltip.style.transition = 'opacity 0.5s';
+      document.body.appendChild(tooltip);
+
+      setTimeout(() => {
+        tooltip.style.opacity = 0;
+        setTimeout(() => {
+          document.body.removeChild(tooltip);
+        }, 500);
+      }, 200);
+    }
+
+  </script>
+
+  <!-- Docsify v4 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+
+  <!-- 回到顶部 -->
+  <script src="//unpkg.com/docsify-scroll-to-top/dist/docsify-scroll-to-top.min.js"></script>
+
+  <!-- 全文搜索 -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.js"></script>
+
+  <!--在所有的代码块上添加一个简单的Click to copy按钮来允许用户从你的文档中轻易地复制代码-->
+  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
+
+  <!-- 侧边栏目录折叠 -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
+
+  <!-- emoji表情支持 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/emoji.min.js"></script>
+
+  <!-- 图片放大缩小支持 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+
+  <!-- 公式 -->
+  <script src="//cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/marked@4"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-katex@latest/dist/docsify-katex.js"></script>
+
+  <!-- 分页导航 -->
+  <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
+
+  <!-- 字数统计 -->
+  <script src="//unpkg.com/docsify-count/dist/countable.js"></script>
+
+  <!-- 代码高亮  https://cdn.jsdelivr.net/npm/prismjs@1/components/ -->
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-python.min.js"></script>
+  <!-- <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-cmake.min.js"></script> -->
+  <!-- <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-java.min.js"></script> -->
+  <!-- <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-csharp.min.js"></script> -->
+  <!-- <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-docker.min.js"></script> -->
+  <!-- <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-powershell.min.js"></script> -->
+
+
+  <!-- PDFObject.js is a required dependency of this plugin -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/pdfobject/2.2.8/pdfobject.min.js"></script>
+  <script src="//unpkg.com/docsify-pdf-embed-plugin/src/docsify-pdf-embed.js"></script>
+
+  <!--美化提示  NOTE TIP WARNING DANGER-->
+  <script src="https://unpkg.com/docsify-plugin-flexible-alerts"></script>
+
+  <!-- drawio [filename](https://cdn.jsdelivr.net/npm/docsify-drawio/test.drawio ':include :type=code') -->
+  <!-- [filename](https://raw.githubusercontent.com/iihciyekub/codecopilot.polyU/main/docs/drawio/br.drawio ':include :type=xml') -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify-drawio/viewer.min.js"></script>
+  <script src='https://cdn.jsdelivr.net/npm/docsify-drawio/drawio.js'></script>
+</body>
+
+</html>

@@ -1,0 +1,75 @@
+.obsidian/
+# macOS 系统文件
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# macOS 资源库文件
+Icon
+._*
+
+# 磁盘图片上的资源库文件
+.Spotlight-V100
+.Trashes
+
+# 缓存文件
+*.swp
+*.lock
+*.DS_Store
+*.code-workspace
+# macOS特定文件
+.DS_Store
+.DS_Store?
+.Spotlight-V100
+.Trashes
+._*
+*.mp4
+
+# Xcode 和 Swift 项目
+*.xcodeproj/
+*.xcworkspace/
+*.xcuserstate
+*.xcscheme
+DerivedData/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.hmap
+*.xccheckout
+*.xcscmblueprint
+*.xcassets/
+
+# Python 虚拟环境文件
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.pyo
+
+# Node.js 项目
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# macOS 系统中生成的压缩文件
+*.tar.gz
+*.tgz
+*.gz
+*.zip
+
+# Git 临时文件
+*.orig
+
+# Visual Studio Code 文件
+.vscode/
+.idea/
+
+# Texifier 相关文件
+*.log
+*.aux
+*.synctex.gz
+*.out
+*.fls
+*.fdb_latexmk
+_tmp
